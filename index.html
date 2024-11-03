@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haptic Feedback Example</title>
+</head>
+<body>
+    <button id="hapticButton">Нажми меня!</button>
+
+    <script>
+        // Функция для активации вибрации
+        function vibrateDevice() {
+            // Проверяем поддержку вибрации
+            if (navigator.vibrate) {
+                // Вибрация в течение 50 миллисекунд
+                navigator.vibrate(50);
+            }
+        }
+
+        // Добавляем обработчик клика на кнопку
+        document.getElementById('hapticButton').addEventListener('click', vibrateDevice);
+    </script>
+</body>
+</html>
