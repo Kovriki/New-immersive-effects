@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knob-Controlled Gallery</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body, html {
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+
+    .gallery-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100vw;
+        overflow: hidden;
+    }
+
+    .carousel {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+        gap: 16px;
+        padding: 16px;
+        scroll-snap-type: x mandatory;
+    }
+
+    .carousel img {
+        width: calc(100% / 3 - 32px); /* 3 images in view */
+        height: auto;
+        scroll-snap-align: center;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .knob-container {
+        position: relative;
+        margin-top: 20px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background-color: #4CAF50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: center;
+    }
+
+    .indicator {
+        position: absolute;
+        width: 280px; /* чуть меньше самого кноба */
+        height: 280px;
+        border-radius: 50%;
+        border: 8px solid rgba(255, 255, 255, 0.5);
+        top: 10px;
+        left: 10px;
+        pointer-events: none; /* чтобы не мешать работе кноба */
+    }
+</style>
+</head>
+<body>
+
+<div class="gallery-container">
+    <div class="carousel">
+        <img src="gallery/img-1.jpg" alt="Image 1">
+        <img src="gallery/img-1.jpg" alt="Image 2">
+        <img src="gallery/img-1.jpg" alt="Image 3">
+        <img src="gallery/img-1.jpg" alt="Image 4">
+        <img src="gallery/img-1.jpg" alt="Image 5">
+        <img src="gallery/img-1.jpg" alt="Image 6">
+        <img src="gallery/img-1.jpg" alt="Image 7">
+    </div>
+    <div class="knob-container" id="knob">
+        <div class="indicator" id="indicator"></div>
+    </div>
+</div>
+
+<script>
+    const carousel = document.querySelector('.carousel');
+    const knob = document.getElementById('knob');
+    const indicator = document.getElementById('indicator');
+
+    let rotation = 0;
+    let startX = 0;
+
+    function updateCarousel() {
+        const offset = rotation % 360;
+        const scrollAmount = (offset / 360) * carousel.scrollWidth;
+        carousel.scrollLeft = scrollAmount;
+        indicator.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    knob.addEventListener('mousedown', (e) => {
+        startX = e.clientX;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', stopRotation);
+    });
+
+    function handleMouseMove(e) {
+        const deltaX = e.clientX - startX;
+        rotation += deltaX / 2;
+        startX = e.clientX;
+        updateCarousel();
+    }
+
+    function stopRotation() {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', stopRotation);
+    }
+
+    // Swipe/scroll control
+    carousel.addEventListener('scroll', () => {
+        const scrollPosition = carousel.scrollLeft;
+        rotation = (scrollPosition / carousel.scrollWidth) * 360;
+        indicator.style.transform = `rotate(${rotation}deg)`;
+    });
+</script>
+
+</body>
+</html>

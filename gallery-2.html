@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Document</title>
+
+   <style>
+      .gallery {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         position: relative;
+      }
+
+      .central-image {
+         width: 300px;
+         height: 400px;
+         overflow: hidden;
+         border-radius: 8px;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         margin-bottom: 20px;
+         z-index: 1;
+      }
+
+      .central-image img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+      }
+
+      .circular-gallery {
+         position: relative;
+         width: 500px; /* Размер круга */
+         height: 500px;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         z-index: 0;
+      }
+
+      .gallery-image {
+         position: absolute;
+         width: 150px; /* Размер изображений по кругу */
+         height: 200px;
+         object-fit: cover;
+         transition: transform 0.3s, opacity 0.3s;
+         opacity: 0.6;
+         transform: scale(0.8);
+      }
+
+      /* Расположение изображений по кругу */
+      .gallery-image:nth-child(1) { transform: translate(200px, 0); }
+      .gallery-image:nth-child(2) { transform: translate(-200px, 0); }
+      .gallery-image:nth-child(3) { transform: translate(0, 200px); }
+      .gallery-image:nth-child(4) { transform: translate(0, -200px); }
+
+      .knob-container {
+         width: 100px;
+         height: 100px;
+         position: relative;
+         margin-top: 20px;
+      }
+
+      .knob {
+         width: 100%;
+         height: 100%;
+         background-color: #ddd;
+         border-radius: 50%;
+         box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+         cursor: pointer;
+      }
+
+   </style>
+
+
+
+
+
+
+
+
+</head>
+<body>
+   
+
+   <div class="gallery">
+      <div class="central-image">
+          <img id="current-image" src="gallery/img-1.jpg" alt="Central Image">
+      </div>
+      <div class="circular-gallery">
+          <img class="gallery-image" src="gallery/img-1.jpg" alt="Image 1">
+          <img class="gallery-image" src="gallery/img-2.jpg" alt="Image 2">
+          <img class="gallery-image" src="gallery/img-3.jpg" alt="Image 3">
+          <img class="gallery-image" src="gallery/img-4.jpg" alt="Image 4">          
+          <img class="gallery-image" src="gallery/img-3.jpg" alt="Image 3">
+          <img class="gallery-image" src="gallery/img-4.jpg" alt="Image 4">
+          <!-- Добавьте больше изображений, если нужно -->
+      </div>
+      <div class="knob-container">
+          <div class="knob" id="knob"></div>
+      </div>
+  </div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+
+   const images = [
+         'gallery/img-1.jpg',
+        'gallery/img-2.jpg',
+        'gallery/img-3.jpg',
+        'gallery/img-4.jpg',
+        'gallery/img-5.jpg',
+        'gallery/img-6.jpg',
+      // Добавьте другие изображения
+   ];
+   let currentImageIndex = 0;
+
+   const knob = document.getElementById('knob');
+   const centralImage = document.getElementById('current-image');
+   const circularGallery = document.querySelector('.circular-gallery');
+   const galleryImages = document.querySelectorAll('.gallery-image');
+
+   let startAngle = 0;
+
+   // Функция для обновления центрального изображения
+   function updateCentralImage(index) {
+      centralImage.src = images[index];
+   }
+
+   // Функция для перемещения изображений по кругу
+   function rotateGallery() {
+      galleryImages.forEach((img, index) => {
+         const angle = ((index - currentImageIndex + images.length) % images.length) * (Math.PI / 2);
+         img.style.transform = `translate(${200 * Math.cos(angle)}px, ${200 * Math.sin(angle)}px)`;
+         img.style.opacity = index === currentImageIndex ? '1' : '0.6';
+         img.style.transform += index === currentImageIndex ? ' scale(1.1)' : ' scale(0.8)';
+      });
+   }
+
+   // Функция для обработки вращения кноба
+   function handleRotation(event) {
+      const rect = knob.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const angle = Math.atan2(event.clientY - centerY, event.clientX - centerX) * (180 / Math.PI);
+
+      if (Math.abs(angle - startAngle) > 15) {
+         if (angle > startAngle) {
+               currentImageIndex = (currentImageIndex + 1) % images.length;
+         } else {
+               currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+         }
+         updateCentralImage(currentImageIndex);
+         rotateGallery();
+         startAngle = angle;
+      }
+   }
+
+   // Инициализация позиции изображений
+   rotateGallery();
+
+   // Обработчики для отслеживания вращения
+   knob.addEventListener('mousedown', () => {
+      document.addEventListener('mousemove', handleRotation);
+   });
+
+   document.addEventListener('mouseup', () => {
+      document.removeEventListener('mousemove', handleRotation);
+   });
+
+
+
+
+  </script>
+</body>
+</html>
